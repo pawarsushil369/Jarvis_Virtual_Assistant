@@ -1,28 +1,29 @@
-import express from "express"
-import dotenv from "dotenv"
-dotenv.config()
-import connectDb from "./config/db.js"
-import authRouter from "./routes/auth.routes.js"
-import cors from "cors"
-import cookieParser from "cookie-parser"
-import userRouter from "./routes/user.routes.js"
-import geminiResponse from "./gemini.js"
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+// ... your other imports
 
+const app = express();
 
-const app=express()
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}))
-const port=process.env.PORT || 5000
-app.use(express.json())
-app.use(cookieParser())
-app.use("/api/auth",authRouter)
-app.use("/api/user",userRouter)
+  origin: true, // Allows requests from any frontend origin (or put your frontend URL here)
+  credentials: true
+}));
 
+const port = process.env.PORT || 5000;
 
-app.listen(port,()=>{
-    connectDb()
-    console.log("server started")
-})
+app.use(express.json());
+app.use(cookieParser());
 
+// 1. Add this root route so visiting your Render URL doesn't give a 404
+app.get("/", (req, res) => {
+  res.send("Jarvis Virtual Assistant Backend is running successfully!");
+});
+
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+
+app.listen(port, () => {
+    connectDb();
+    console.log(`Server started on port ${port}`);
+});
